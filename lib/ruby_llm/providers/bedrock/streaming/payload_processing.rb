@@ -8,9 +8,9 @@ module RubyLLM
       module Streaming
         # Module for processing payloads from AWS Bedrock streaming responses.
         module PayloadProcessing
-          def process_payload(payload, &)
+          def process_payload(payload, &block)
             json_payload = extract_json_payload(payload)
-            parse_and_process_json(json_payload, &)
+            parse_and_process_json(json_payload, &block)
           rescue JSON::ParserError => e
             log_json_parse_error(e, json_payload)
           rescue StandardError => e
@@ -25,16 +25,16 @@ module RubyLLM
             payload[json_start..json_end]
           end
 
-          def parse_and_process_json(json_payload, &)
+          def parse_and_process_json(json_payload, &block)
             json_data = JSON.parse(json_payload)
-            process_json_data(json_data, &)
+            process_json_data(json_data, &block)
           end
 
-          def process_json_data(json_data, &)
+          def process_json_data(json_data, &block)
             return unless json_data['bytes']
 
             data = decode_and_parse_data(json_data)
-            create_and_yield_chunk(data, &)
+            create_and_yield_chunk(data, &block)
           end
 
           def decode_and_parse_data(json_data)
