@@ -40,7 +40,7 @@ module RubyLLM
 
       def sign_request(url, config:, method: :post, payload: nil)
         signer = create_signer(config)
-        request = build_request(url, config:, method:, payload:)
+        request = build_request(url, config: config, method: method, payload: payload)
         signer.sign_request(request)
       end
 

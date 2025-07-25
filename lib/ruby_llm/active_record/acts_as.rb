@@ -156,9 +156,9 @@ module RubyLLM
         message_record
       end
 
-      def ask(message, with: nil, &)
-        create_user_message(message, with:)
-        complete(&)
+      def ask(message, with: nil, &block)
+        create_user_message(message, with: with)
+        complete(&block)
       end
 
       alias say ask

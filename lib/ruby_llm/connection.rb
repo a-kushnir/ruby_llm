@@ -33,7 +33,7 @@ module RubyLLM
       end
     end
 
-    def post(url, payload, &)
+    def post(url, payload, &block)
       body = payload.is_a?(Hash) ? JSON.generate(payload, ascii_only: false) : payload
       @connection.post url, body do |req|
         req.headers.merge! @provider.headers(@config) if @provider.respond_to?(:headers)
@@ -41,7 +41,7 @@ module RubyLLM
       end
     end
 
-    def get(url, &)
+    def get(url, &block)
       @connection.get url do |req|
         req.headers.merge! @provider.headers(@config) if @provider.respond_to?(:headers)
         yield req if block_given?

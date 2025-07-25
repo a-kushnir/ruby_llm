@@ -7,7 +7,7 @@ module RubyLLM
       module Embeddings
         module_function
 
-        def embedding_url(...)
+        def embedding_url(model:)
           'embeddings'
         end
 
@@ -28,7 +28,7 @@ module RubyLLM
           # return it as a single vector
           vectors = vectors.first if vectors.length == 1 && !text.is_a?(Array)
 
-          Embedding.new(vectors:, model:, input_tokens:)
+          Embedding.new(vectors: vectors, model: model, input_tokens: input_tokens)
         end
       end
     end
