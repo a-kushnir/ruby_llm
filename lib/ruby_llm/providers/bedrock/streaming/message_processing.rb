@@ -6,28 +6,28 @@ module RubyLLM
       module Streaming
         # Module for processing streaming messages from AWS Bedrock.
         module MessageProcessing
-          def process_chunk(chunk, &)
+          def process_chunk(chunk, &block)
             offset = 0
-            offset = process_message(chunk, offset, &) while offset < chunk.bytesize
+            offset = process_message(chunk, offset, &block) while offset < chunk.bytesize
           rescue StandardError => e
             RubyLLM.logger.debug "Error processing chunk: #{e.message}"
             RubyLLM.logger.debug "Chunk size: #{chunk.bytesize}"
           end
 
-          def process_message(chunk, offset, &)
+          def process_message(chunk, offset, &block)
             return chunk.bytesize unless can_read_prelude?(chunk, offset)
 
             message_info = extract_message_info(chunk, offset)
             return find_next_message(chunk, offset) unless message_info
 
-            process_valid_message(chunk, offset, message_info, &)
+            process_valid_message(chunk, offset, message_info, &block)
           end
 
-          def process_valid_message(chunk, offset, message_info, &)
+          def process_valid_message(chunk, offset, message_info, &block)
             payload = extract_payload(chunk, message_info[:headers_end], message_info[:payload_end])
             return find_next_message(chunk, offset) unless valid_payload?(payload)
 
-            process_payload(payload, &)
+            process_payload(payload, &block)
             offset + message_info[:total_length]
           end
 
@@ -43,7 +43,7 @@ module RubyLLM
             headers_end, payload_end = calculate_positions(offset, total_length, headers_length)
             return unless valid_positions?(headers_end, payload_end, chunk.bytesize)
 
-            { total_length:, headers_length:, headers_end:, payload_end: }
+            { total_length: total_length, headers_length: headers_length, headers_end: headers_end, payload_end: payload_end }
           end
 
           def extract_payload(chunk, headers_end, payload_end)

@@ -12,14 +12,14 @@ module RubyLLM
         end
 
         def render_embedding_payload(text, model:, dimensions:)
-          { requests: [text].flatten.map { |t| single_embedding_payload(t, model:, dimensions:) } }
+          { requests: [text].flatten.map { |t| single_embedding_payload(t, model: model, dimensions: dimensions) } }
         end
 
         def parse_embedding_response(response, model:, text:)
           vectors = response.body['embeddings']&.map { |e| e['values'] }
           vectors = vectors.first if vectors&.length == 1 && !text.is_a?(Array)
 
-          Embedding.new(vectors:, model:, input_tokens: 0)
+          Embedding.new(vectors: vectors, model: model, input_tokens: 0)
         end
 
         private
