@@ -14,7 +14,7 @@ module RubyLLM
     end
 
     def add_attachment(source, filename: nil)
-      @attachments << Attachment.new(source, filename:)
+      @attachments << Attachment.new(source, filename: filename)
       self
     end
 
