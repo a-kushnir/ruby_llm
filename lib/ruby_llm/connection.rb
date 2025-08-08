@@ -5,7 +5,7 @@ module RubyLLM
   class Connection
     attr_reader :provider, :connection, :config
 
-    def self.basic(&)
+    def self.basic(&block)
       Faraday.new do |f|
         f.response :logger,
                    RubyLLM.logger,

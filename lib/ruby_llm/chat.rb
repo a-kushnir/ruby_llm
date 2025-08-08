@@ -63,7 +63,7 @@ module RubyLLM
     end
 
     def with_model(model_id, provider: nil, assume_exists: false)
-      @model, @provider = Models.resolve(model_id, provider:, assume_exists:)
+      @model, @provider = Models.resolve(model_id, provider: provider, assume_exists: assume_exists)
       @connection = @context ? @context.connection_for(@provider) : @provider.connection(@config)
       self
     end
@@ -125,7 +125,7 @@ module RubyLLM
         connection: @connection,
         params: @params,
         schema: @schema,
-        &wrap_streaming_block(&)
+        &wrap_streaming_block(&block)
       )
 
       @on[:new_message]&.call unless block_given?

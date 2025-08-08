@@ -72,9 +72,9 @@ module RubyLLM
         [model, provider]
       end
 
-      def method_missing(method, ...)
+      def method_missing(method, *args)
         if instance.respond_to?(method)
-          instance.send(method, ...)
+          instance.send(method, *args)
         else
           super
         end
@@ -161,8 +161,8 @@ module RubyLLM
     end
 
     # Allow enumeration over all models
-    def each(&)
-      all.each(&)
+    def each(&block)
+      all.each(&block)
     end
 
     # Find a specific model by ID
