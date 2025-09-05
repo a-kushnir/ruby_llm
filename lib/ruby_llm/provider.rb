@@ -37,7 +37,7 @@ module RubyLLM
       self.class.configuration_requirements
     end
 
-    def complete(messages, tools:, temperature:, model:, params: {}, headers: {}, schema: nil, &) # rubocop:disable Metrics/ParameterLists
+    def complete(messages, tools:, temperature:, model:, params: {}, headers: {}, schema: nil, &block) # rubocop:disable Metrics/ParameterLists
       normalized_temperature = maybe_normalize_temperature(temperature, model)
 
       payload = Utils.deep_merge(
@@ -53,7 +53,7 @@ module RubyLLM
       )
 
       if block_given?
-        stream_response @connection, payload, headers, &
+        stream_response @connection, payload, headers, &block
       else
         sync_response @connection, payload, headers
       end
@@ -65,15 +65,15 @@ module RubyLLM
     end
 
     def embed(text, model:, dimensions:)
-      payload = render_embedding_payload(text, model:, dimensions:)
-      response = @connection.post(embedding_url(model:), payload)
-      parse_embedding_response(response, model:, text:)
+      payload = render_embedding_payload(text, model: model, dimensions: dimensions)
+      response = @connection.post(embedding_url(model: model), payload)
+      parse_embedding_response(response, model: model, text: text)
     end
 
     def paint(prompt, model:, size:)
-      payload = render_image_payload(prompt, model:, size:)
+      payload = render_image_payload(prompt, model: model, size: size)
       response = @connection.post images_url, payload
-      parse_image_response(response, model:)
+      parse_image_response(response, model: model)
     end
 
     def configured?

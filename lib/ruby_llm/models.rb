@@ -177,8 +177,8 @@ module RubyLLM
       @models
     end
 
-    def each(&)
-      all.each(&)
+    def each(&block)
+      all.each(&block)
     end
 
     def find(model_id, provider = nil)

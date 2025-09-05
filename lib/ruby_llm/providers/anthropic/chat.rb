@@ -16,7 +16,7 @@ module RubyLLM
           system_content = build_system_content(system_messages)
 
           build_base_payload(chat_messages, model, stream).tap do |payload|
-            add_optional_fields(payload, system_content:, tools:, temperature:)
+            add_optional_fields(payload, system_content: system_content, tools: tools, temperature: temperature)
           end
         end
 

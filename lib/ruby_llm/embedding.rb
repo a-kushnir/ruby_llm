@@ -23,7 +23,7 @@ module RubyLLM
                                                        config: config)
       model_id = model.id
 
-      provider_instance.embed(text, model: model_id, dimensions:)
+      provider_instance.embed(text, model: model_id, dimensions: dimensions)
     end
   end
 end

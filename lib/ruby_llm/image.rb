@@ -43,7 +43,7 @@ module RubyLLM
                                                        config: config)
       model_id = model.id
 
-      provider_instance.paint(prompt, model: model_id, size:)
+      provider_instance.paint(prompt, model: model_id, size: size)
     end
   end
 end
