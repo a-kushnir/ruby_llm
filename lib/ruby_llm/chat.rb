@@ -30,9 +30,9 @@ module RubyLLM
       }
     end
 
-    def ask(message = nil, with: nil, &)
+    def ask(message = nil, with: nil, &block)
       add_message role: :user, content: Content.new(message, with)
-      complete(&)
+      complete(&block)
     end
 
     alias say ask
@@ -57,7 +57,7 @@ module RubyLLM
     end
 
     def with_model(model_id, provider: nil, assume_exists: false)
-      @model, @provider = Models.resolve(model_id, provider:, assume_exists:, config: @config)
+      @model, @provider = Models.resolve(model_id, provider: provider, assume_exists: assume_exists, config: @config)
       @connection = @provider.connection
       self
     end
@@ -117,11 +117,11 @@ module RubyLLM
       self
     end
 
-    def each(&)
-      messages.each(&)
+    def each(&block)
+      messages.each(&block)
     end
 
-    def complete(&) # rubocop:disable Metrics/PerceivedComplexity
+    def complete(&block) # rubocop:disable Metrics/PerceivedComplexity
       response = @provider.complete(
         messages,
         tools: @tools,
@@ -130,7 +130,7 @@ module RubyLLM
         params: @params,
         headers: @headers,
         schema: @schema,
-        &wrap_streaming_block(&)
+        &wrap_streaming_block(&block)
       )
 
       @on[:new_message]&.call unless block_given?
@@ -147,7 +147,7 @@ module RubyLLM
       @on[:end_message]&.call(response)
 
       if response.tool_call?
-        handle_tool_calls(response, &)
+        handle_tool_calls(response, &block)
       else
         response
       end
@@ -185,7 +185,7 @@ module RubyLLM
       end
     end
 
-    def handle_tool_calls(response, &) # rubocop:disable Metrics/PerceivedComplexity
+    def handle_tool_calls(response, &block) # rubocop:disable Metrics/PerceivedComplexity
       halt_result = nil
 
       response.tool_calls.each_value do |tool_call|
@@ -194,13 +194,13 @@ module RubyLLM
         result = execute_tool tool_call
         @on[:tool_result]&.call(result)
         content = result.is_a?(Content) ? result : result.to_s
-        message = add_message role: :tool, content:, tool_call_id: tool_call.id
+        message = add_message role: :tool, content: content, tool_call_id: tool_call.id
         @on[:end_message]&.call(message)
 
         halt_result = result if result.is_a?(Tool::Halt)
       end
 
-      halt_result || complete(&)
+      halt_result || complete(&block)
     end
 
     def execute_tool(tool_call)

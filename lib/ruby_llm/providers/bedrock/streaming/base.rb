@@ -18,7 +18,7 @@ module RubyLLM
           end
 
           def stream_response(connection, payload, additional_headers = {}, &block)
-            signature = sign_request("#{connection.connection.url_prefix}#{stream_url}", payload:)
+            signature = sign_request("#{connection.connection.url_prefix}#{stream_url}", payload: payload)
             accumulator = StreamAccumulator.new
 
             response = connection.post stream_url, payload do |req|

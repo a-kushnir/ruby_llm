@@ -40,28 +40,28 @@ module RubyLLM
       Faraday::VERSION.start_with?('1')
     end
 
-    def to_json_stream(&)
+    def to_json_stream(&block)
       buffer = +''
       parser = EventStreamParser::Parser.new
 
-      create_stream_processor(parser, buffer, &)
+      create_stream_processor(parser, buffer, &block)
     end
 
-    def create_stream_processor(parser, buffer, &)
+    def create_stream_processor(parser, buffer, &block)
       if faraday_1?
-        legacy_stream_processor(parser, &)
+        legacy_stream_processor(parser, &block)
       else
-        stream_processor(parser, buffer, &)
+        stream_processor(parser, buffer, &block)
       end
     end
 
-    def process_stream_chunk(chunk, parser, env, &)
+    def process_stream_chunk(chunk, parser, env, &block)
       RubyLLM.logger.debug "Received chunk: #{chunk}" if RubyLLM.config.log_stream_debug
 
       if error_chunk?(chunk)
         handle_error_chunk(chunk, env)
       else
-        yield handle_sse(chunk, parser, env, &)
+        yield handle_sse(chunk, parser, env, &block)
       end
     end
 

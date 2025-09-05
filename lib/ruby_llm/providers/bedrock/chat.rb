@@ -8,7 +8,7 @@ module RubyLLM
         module_function
 
         def sync_response(connection, payload, additional_headers = {})
-          signature = sign_request("#{connection.connection.url_prefix}#{completion_url}", payload:)
+          signature = sign_request("#{connection.connection.url_prefix}#{completion_url}", payload: payload)
           response = connection.post completion_url, payload do |req|
             req.headers.merge! build_headers(signature.headers, streaming: block_given?)
             req.headers = additional_headers.merge(req.headers) unless additional_headers.empty?
@@ -46,7 +46,7 @@ module RubyLLM
           system_content = Anthropic::Chat.build_system_content(system_messages)
 
           build_base_payload(chat_messages, model).tap do |payload|
-            Anthropic::Chat.add_optional_fields(payload, system_content:, tools:, temperature:)
+            Anthropic::Chat.add_optional_fields(payload, system_content: system_content, tools: tools, temperature: temperature)
           end
         end
 

@@ -36,7 +36,7 @@ module RubyLLM
 
       def sign_request(url, method: :post, payload: nil)
         signer = create_signer
-        request = build_request(url, method:, payload:)
+        request = build_request(url, method: method, payload: payload)
         signer.sign_request(request)
       end
 

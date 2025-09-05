@@ -25,7 +25,7 @@ module RubyLLM
 
           vectors = vectors.first if vectors.length == 1 && !text.is_a?(Array)
 
-          Embedding.new(vectors:, model:, input_tokens:)
+          Embedding.new(vectors: vectors, model: model, input_tokens: input_tokens)
         end
       end
     end

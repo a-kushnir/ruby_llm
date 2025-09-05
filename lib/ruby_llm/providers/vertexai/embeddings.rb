@@ -24,7 +24,7 @@ module RubyLLM
           vectors = predictions&.map { |p| p.dig('embeddings', 'values') }
           vectors = vectors.first if vectors&.length == 1 && !text.is_a?(Array)
 
-          Embedding.new(vectors:, model:, input_tokens: 0)
+          Embedding.new(vectors: vectors, model: model, input_tokens: 0)
         end
       end
     end
